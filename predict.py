@@ -36,9 +36,10 @@ for matFile in fileList:
                          area.cell_value(i, 8),
                          area.cell_value(i, 9)]])
         df = pd.DataFrame(mat)
-        if model.predict(df) > kwargs.predict.judge_val:
-            arc += 1
+        sigmoid_val = model.predict(df)
+        if sigmoid_val > kwargs.predict.judge_val:
+            arc += sigmoid_val
         else:
-            normal += 1
+            normal += sigmoid_val
     print(matFile)
-    print("异常点个数为：" + str(arc), "正常点个数为" + str(normal), "异常比为" + str(100 * arc / (normal + arc)) + "%", "\n")
+    print("异常值为：" + str(arc), "正常值为" + str(normal), "异常比为" + str(100 * arc / (normal + arc)) + "%", "\n")
