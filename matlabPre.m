@@ -1,5 +1,6 @@
 function mls = matlabPre(path)
 arcRess = [];
+arcFeature = [];
 normalDataO=load(path);
 normalData= normalDataO.y;
 normalData=normalData(:, 2);
@@ -31,12 +32,20 @@ for o = 1:(length(normalMe)/hop)
     end
     res(o) = PF;
 end
-flag = 0;
-for o = 1:(length(normalMe)/hop)
-    if res(o) > 2e-5
-        flag = flag+1;
+flag = [];
+    for r = 1:40:200
+        flag = [flag, p(r, :)'*10e7];
     end
-end
+    for r = 1:5
+        for col = 1:28000
+            if flag(col, r) > 10
+                r_feature(col, r) = 1;
+            else
+                r_feature(col, r) = 0;
+            end
+        end
+    end
 arcRess = [arcRess res*10e7];
+
 mls = arcRess';
 end

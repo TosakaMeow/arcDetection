@@ -66,8 +66,8 @@ def fileFeaSolve(data, dataRange):
         # print("已完成", int(100*i/int(xlsxData.nrows / 1000)), "%")
     # print("已完成 100 %")
 
-    wb.save('result/temp.xls')
-def matlabFeaSolve(data, dataRange):
+    wb.save('result/data_temp.xls')
+def matlabFeaSolve(data, feature, dataRange):
     print("正在进行特征采样......")
     # 创建结果存储文件
     wb = xlwt.Workbook()
@@ -118,7 +118,21 @@ def matlabFeaSolve(data, dataRange):
         # print("已完成", int(100*i/int(xlsxData.nrows / 1000)), "%")
     # print("已完成 100 %")
 
-    wb.save('temp.xls')
+    wb.save('data_temp.xls')
+    # 处理特征数组
+    wb1 = xlwt.Workbook()
+    sh1 = wb1.add_sheet('1')
+
+    for m in range(0, 5):
+        for i in range(0, int(dataRange / 500)):
+            c0 = 0
+            for k in range(i * 500, (i + 1) * 500):
+                val = feature[k][0]
+                if int(val) == 1:
+                    c0 += 1
+            sh1.write(i, m, c0)
+
+    wb1.save('feature_temp.xls')
 
 
 import os

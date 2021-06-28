@@ -4,9 +4,12 @@ import keras
 from keras import layers
 import matplotlib.pyplot as plt
 import kwargs
+from sklearn.utils import shuffle
 
 # 读取训练集
-data = pd.read_csv("train.old.csv")
+data = pd.read_csv("data_train.csv")
+# 打乱数据
+data = shuffle(data)
 # 提取数据集前九列作为输入
 data_train = data[["feature0", "feature1", "feature2", "feature3", "feature4",
                    "feature5", "feature6", "feature7", "feature8", "feature9"]]

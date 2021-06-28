@@ -3,4 +3,4 @@ class DNN:
 
 
 class predict:
-    judge_val = 0.8     # 判断阈值
+    judge_val = 0.5 # 判断阈值
