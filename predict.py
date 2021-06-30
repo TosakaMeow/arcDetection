@@ -12,8 +12,8 @@ sh = wb.add_sheet('1')
 
 print("正在初始化matlab组件......")
 eng = matlab.engine.start_matlab()
-path = "D:/6A333M/5V-3A-XCQ"
-fileList = dataFunction.file_name(path, ".mat")
+
+fileList = dataFunction.file_name(kwargs.DNN.predictPath, ".mat")
 print("matlab组件初始化完毕!")
 model = load_model("model.h5")
 print("模型加载完毕！")
@@ -22,9 +22,9 @@ for matFile in fileList:
     print("正在处理数据......")
     t = eng.matlabPre(matFile)
 
-    dataFunction.matlabFeaSolve(t, len(t))
+    dataFunction.matlab_solve(t, len(t))
 
-    data = xlrd.open_workbook("temp.xls")
+    data = xlrd.open_workbook("./temp/matlab_temp.xls")
     area = data.sheet_by_index(0)
 
     arc = 1

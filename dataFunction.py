@@ -1,26 +1,34 @@
-import xlwt
-import xlrd
 import matlab.engine
+import os
+import numpy as np
+import pandas as pd
+import xlrd
+import xlwt
+from keras.models import load_model
+import dataFunction
+import matlab.engine
+import kwargs
 
-def startMatlab(path):
+def start_matlab(path):
     # 调用matlab进行处理
-    print("正在初始化mablab组件......")
+    print("正在初始化matlab组件......")
     eng = matlab.engine.start_matlab()
     print("matlab组件初始化完毕，正在处理数据......")
     t = eng.matlabPre(path)
     return t
 
-def loadXlsx(path):
+
+def load_xlsx(path):
     data = xlrd.open_workbook(path)
     area = data.sheet_by_index(0)
     return area
 
 
-def fileFeaSolve(data, dataRange):
+def file_solve(data, data_range):
     # 创建结果存储文件
     wb = xlwt.Workbook()
     sh = wb.add_sheet('1')
-    for i in range(0, int(dataRange / 500)):
+    for i in range(0, int(data_range / 500)):
         c0 = 0
         c1 = 0
         c2 = 0
@@ -33,25 +41,25 @@ def fileFeaSolve(data, dataRange):
         c9 = 0
         for k in range(i * 500, (i + 1) * 500):
             val = data.cell_value(k, 0)
-            if int(val) < 2000:
+            if int(val) < 10000:
                 c0 += 1
-            elif 2000 <= int(val) < 4000:
+            elif 10000 <= int(val) < 20000:
                 c1 += 1
-            elif 4000 <= int(val) < 6000:
+            elif 20000 <= int(val) < 30000:
                 c2 += 1
-            elif 6000 <= int(val) < 8000:
+            elif 30000 <= int(val) < 40000:
                 c3 += 1
-            elif 8000 <= int(val) < 10000:
+            elif 40000 <= int(val) < 50000:
                 c4 += 1
-            elif 10000 <= int(val) < 12000:
+            elif 50000 <= int(val) < 60000:
                 c5 += 1
-            elif 12000 <= int(val) < 14000:
+            elif 60000 <= int(val) < 70000:
                 c6 += 1
-            elif 14000 <= int(val) < 16000:
+            elif 70000 <= int(val) < 80000:
                 c7 += 1
-            elif 16000 <= int(val) < 18000:
+            elif 80000 <= int(val) < 90000:
                 c8 += 1
-            elif 18000 <= int(val) < 20000:
+            elif 90000 <= int(val) < 100000:
                 c9 += 1
         sh.write(i, 0, c0)
         sh.write(i, 1, c1)
@@ -67,12 +75,14 @@ def fileFeaSolve(data, dataRange):
     # print("已完成 100 %")
 
     wb.save('result/data_temp.xls')
-def matlabFeaSolve(data, dataRange):
+
+
+def matlab_solve(data, data_range):
     print("正在进行特征采样......")
     # 创建结果存储文件
     wb = xlwt.Workbook()
     sh = wb.add_sheet('1')
-    for i in range(0, int(dataRange / 500)):
+    for i in range(0, int(data_range / 500)):
         c0 = 0
         c1 = 0
         c2 = 0
@@ -118,16 +128,57 @@ def matlabFeaSolve(data, dataRange):
         # print("已完成", int(100*i/int(xlsxData.nrows / 1000)), "%")
     # print("已完成 100 %")
 
-    wb.save('temp.xls')
+    wb.save('./temp/matlab_temp.xls')
 
 
-import os
-
-
-def file_name(file_dir, fileType):
-    L = []
+def file_name(file_dir, file_type):
+    l = []
     for root, dirs, files in os.walk(file_dir):
         for file in files:
-            if os.path.splitext(file)[1] == str(fileType):
-                L.append(os.path.join(root, file))
-    return L
+            if os.path.splitext(file)[1] == str(file_type):
+                l.append(os.path.join(root, file))
+    return l
+
+
+def predicr_main(path):
+    wb = xlwt.Workbook()
+    sh = wb.add_sheet('1')
+
+    print("正在初始化matlab组件......")
+    eng = matlab.engine.start_matlab()
+
+    print("matlab组件初始化完毕!")
+    model = load_model("model.h5")
+    print("模型加载完毕！")
+    ss = 0
+    print("正在处理数据......")
+    t = eng.matlabPre(path)
+
+    dataFunction.matlab_solve(t, len(t))
+
+    data = xlrd.open_workbook("temp.xls")
+    area = data.sheet_by_index(0)
+
+    arc = 1
+    normal = 0
+    for i in range(1, area.nrows):
+        mat = np.array([[area.cell_value(i, 0),
+                        area.cell_value(i, 1),
+                        area.cell_value(i, 2),
+                        area.cell_value(i, 3),
+                        area.cell_value(i, 4),
+                        area.cell_value(i, 5),
+                        area.cell_value(i, 6),
+                        area.cell_value(i, 7),
+                        area.cell_value(i, 8),
+                        area.cell_value(i, 9)]])
+        df = pd.DataFrame(mat)
+        j = model.predict(df)
+        sh.write(ss, 0, float(j) * 10000)
+        ss += 1
+        if j > kwargs.predict.judge_val:
+            arc += 1
+        else:
+            normal += 1
+    print("异常点个数为：" + str(arc), "正常点个数为" + str(normal), "异常比为" + str(100 * arc / (normal + arc)) + "%", "\n")
+    wb.save('预测值统计.temp.xls')
