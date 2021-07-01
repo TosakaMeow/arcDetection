@@ -4,8 +4,7 @@ import numpy as np
 import pandas as pd
 import xlrd
 import xlwt
-from keras.models import load_model
-import dataFunction
+import keras
 import matlab.engine
 import kwargs
 
@@ -140,23 +139,27 @@ def file_name(file_dir, file_type):
     return l
 
 
-def predicr_main(path):
+def predicr_main(path, log_window):
     wb = xlwt.Workbook()
     sh = wb.add_sheet('1')
+
 
     print("正在初始化matlab组件......")
     eng = matlab.engine.start_matlab()
 
     print("matlab组件初始化完毕!")
-    model = load_model("model.h5")
-    print("模型加载完毕！")
+    try:
+        model = keras.models.load_model("model.odl.h5")
+        print("模型加载完毕！")
+    except:
+        print("模型加载失败！")
     ss = 0
     print("正在处理数据......")
     t = eng.matlabPre(path)
 
-    dataFunction.matlab_solve(t, len(t))
+    matlab_solve(t, len(t))
 
-    data = xlrd.open_workbook("temp.xls")
+    data = xlrd.open_workbook("./temp/matlab_temp.xls")
     area = data.sheet_by_index(0)
 
     arc = 1
@@ -176,9 +179,13 @@ def predicr_main(path):
         j = model.predict(df)
         sh.write(ss, 0, float(j) * 10000)
         ss += 1
+        arc = arc+float(j)
+        '''
         if j > kwargs.predict.judge_val:
             arc += 1
         else:
             normal += 1
     print("异常点个数为：" + str(arc), "正常点个数为" + str(normal), "异常比为" + str(100 * arc / (normal + arc)) + "%", "\n")
+    '''
+    print(arc)
     wb.save('预测值统计.temp.xls')

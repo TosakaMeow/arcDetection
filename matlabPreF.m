@@ -1,72 +1,38 @@
-function t= matlabPreF(path)
-% ???10ms?10ms?50Hz??????????????333M???10ms?????333e6*10/1000=333e4.
-% ??????30????????????????????????????????????????????NI???????????
-File = dir(fullfile(path,'*.mat'));
-FileNames = {File.name}';
-[q, p] = size(FileNames);
-arcRess = [];% ????????
-arcFeature = [];
-for k = 1:q
-    log = "?????" + k +"???......??" + q +"???......";
-    disp(log);
-    disp(FileNames{k,:});
-    normalDataO=load(FileNames{k,:});
-    normalData= normalDataO.y;
-    normalData=normalData(:, 2);
-    normalMe = normalData(2*333e4:30*333e4);
-    % Z-Score???
-    normalAvg = mean(normalMe);
-    [m, n] = size(normalMe);
-    normalVariation = sqrt(sum((normalMe - normalAvg).*(normalMe - normalAvg)) / m);
-    normalRange = normalMe - normalAvg;
-    normalMe = normalRange / normalVariation;
-    % normalS = (normalMe - min(normalMe)) / (max(normalMe) - min(normalMe));
-    % ????
-    temp = sqrt((abs(normalMe) - normalAvg).*(abs(normalMe) - normalAvg)/ m);
-    v = max(temp)-min(temp);
-    ss = mean(temp);
-    for i = 2:size(temp)
-        distance = normalMe(i)-normalMe(i-1);
-        if abs(temp(i)-ss)/v >0.02 && abs(distance) > 0.05
-            normalMe(i) = normalMe(i-1);
-        end
+function mls = matlabPre(path)
+arcRess = [];
+normalDataO=load(path);
+normalData= normalDataO.y;
+normalData=normalData(:, 2);
+normalMe = normalData(2*333e4:30*333e4);
+normalAvg = mean(normalMe);
+[m, n] = size(normalMe);
+normalVariation = sqrt(sum((normalMe - normalAvg).*(normalMe - normalAvg)) / m);
+normalRange = normalMe - normalAvg;
+normalMe = normalRange / normalVariation;
+temp = sqrt((abs(normalMe) - normalAvg).*(abs(normalMe) - normalAvg)/ m);
+v = max(temp)-min(temp);
+ss = mean(temp);
+for i = 2:size(temp)
+    distance = normalMe(i)-normalMe(i-1);
+    if abs(temp(i)-ss)/v >0.02 && abs(distance) > 0.05
+        normalMe(i) = normalMe(i-1);
     end
-    wlen=512;%???????????????????????????
-    hop=333e1;%???????????1??????????????????
-    h=hamming(wlen);%????????
-    yxis = 1000;
-    % normalMe = abs(normalMe);
-    [s, f, t, p] = spectrogram(normalMe,h,wlen-hop,yxis,333e3);
-    for o = 1:(length(normalMe)/hop) % ?hop????????????/hop
-        PF = 0;
-        for r = 5:240 % ???1.5KHz-80KHz??????????
-            PF = PF+p(r, o)/r;
-        end
-        res(o) = PF;
-    end
-    flag = [];
-    for r = 10:50:210 % ?????????????????
-        flag = [flag, p(r, :)'*10e7];
-    end
-    for r = 1:5
-        for col = 1:28000
-            if flag(col, r) > 20
-                r_feature(col, r) = 1;
-            else
-                r_feature(col, r) = 0;
-            end
-        end
-    end
-
-    arcRess = [arcRess res*10e7];
 end
-% res = (res-min(res))/(max(res)-min(res));
-% subplot(2,1,1)
-% plot(normalMe)
-% box off
-% hold on
-% subplot(2,1,2)
-% plot(arcRess)
-xlswrite("data.xlsx",arcRess')
-t = 1;
+wlen=512;
+hop=333e1;
+h=hamming(wlen);
+yxis = 1000;
+[s, f, t, p] = spectrogram(normalMe,h,wlen-hop,yxis,333e3);
+
+for o = 1:(length(normalMe)/hop)
+    PF = 0;
+    for r = 5:240
+        PF = PF+p(r, o)/r;
+    end
+    res(o) = PF;
+end
+
+arcRess = [arcRess res*10e7];
+
+mls = arcRess';
 end

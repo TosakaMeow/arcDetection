@@ -47,9 +47,9 @@ def load_train_data():
     except:
         tkinter.messagebox.showerror('加载失败', '请检查文件是否被其他程序占用或未选取文件！')
 
-def load_predict_data():
+def load_predict_data(log_window):
     try:
-        dataFunction.predicr_main(file_1)
+        dataFunction.predicr_main(file_1, log_window)
     except:
         tkinter.messagebox.showerror('加载失败', '请检查文件是否被其他程序占用或未选取文件！')
 
@@ -86,8 +86,9 @@ fileName_0.place(x=10, y=40)
 Button(text='选择需要预测的文件', command=lambda: Win_Open_File_1()).place(x=340, y=90)
 fileName_1 = Text(MainWindows, width=40, height=2)
 fileName_1.place(x=10, y=90)
-Button(text='开始训练', command=lambda: load_train_data()).place(x=120, y=180)
-Button(text='预测', command=lambda: load_predict_data()).place(x=240, y=180)
 log = Text(MainWindows, width=50, height=20)
 log.place(x=10, y=220)
+Button(text='开始训练', command=lambda: load_train_data()).place(x=120, y=180)
+Button(text='预测', command=lambda: load_predict_data(log)).place(x=240, y=180)
+
 MainWindows.mainloop()

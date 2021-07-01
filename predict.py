@@ -42,6 +42,8 @@ for matFile in fileList:
                          area.cell_value(i, 9)]])
         df = pd.DataFrame(mat)
         j = model.predict(df)
+        # print(j)
+
         sh.write(ss, 0, float(j)*10000)
         ss += 1
         if j > kwargs.predict.judge_val:
@@ -51,3 +53,4 @@ for matFile in fileList:
     print(matFile)
     print("异常点个数为：" + str(arc), "正常点个数为" + str(normal), "异常比为" + str(100 * arc / (normal + arc)) + "%", "\n")
 wb.save('预测值统计.temp.xls')
+

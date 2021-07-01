@@ -22,7 +22,7 @@ def train_main(path):
 
     # 构建模型
     model = keras.Sequential()
-    # model.add(layers.Dense(32, input_dim=10, activation="sigmoid"))
+    # model.add(layers.Dense(32, input_dim=10, activation="softmax"))
     model.add(layers.Dense(16, activation='relu', input_shape=(10,)))
     model.add(layers.Dense(16, activation='relu'))
     model.add(layers.Dense(1, activation='sigmoid'))
@@ -40,8 +40,7 @@ def train_main(path):
     model.save("model.h5")
 
     # 绘制训练精度图
-    # plt.plot(range(kwargs.DNN.epochs), history.history.get('acc'))
-    # plt.xlabel("epochs")
-    # plt.ylabel("accuracy")
-    # plt.show()
-
+    plt.plot(range(kwargs.DNN.epochs), history.history.get('acc'))
+    plt.xlabel("epochs")
+    plt.ylabel("accuracy")
+    plt.show()
