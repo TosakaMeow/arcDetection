@@ -13,8 +13,10 @@ def train_main(path):
     # 打乱数据
     data = shuffle(data)
     # 提取数据集前九列作为输入
-    data_train = data[["feature0", "feature1", "feature2", "feature3", "feature4",
-                       "feature5", "feature6", "feature7", "feature8", "feature9"]]
+    data_train = data[["f1", "f2", "f3", "f4",
+                       "f5", "f6", "f7", "f8", "f9",
+                       "f10", "f11", "f12", "f13", "f14",
+                       "f15", "f16", "f17", "f18", "f19"]]
 
     # 提取数据集第十列并reshape作为标签
     data_target = data["label"].values.reshape(len(data), 1)
@@ -23,7 +25,7 @@ def train_main(path):
     # 构建模型
     model = keras.Sequential()
     # model.add(layers.Dense(32, input_dim=10, activation="softmax"))
-    model.add(layers.Dense(16, activation='relu', input_shape=(10,)))
+    model.add(layers.Dense(16, activation='relu', input_shape=(19,)))
     model.add(layers.Dense(16, activation='relu'))
     model.add(layers.Dense(1, activation='sigmoid'))
 
@@ -44,3 +46,5 @@ def train_main(path):
     plt.xlabel("epochs")
     plt.ylabel("accuracy")
     plt.show()
+
+train_main("data_train.csv")

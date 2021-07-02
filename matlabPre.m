@@ -1,5 +1,4 @@
 function mls = matlabPre(path)
-arcRess = [];
 normalDataO=load(path);
 normalData= normalDataO.y;
 normalData=normalData(:, 2);
@@ -23,25 +22,17 @@ hop=333e1;
 h=hamming(wlen);
 yxis = 1000;
 [s, f, t, p] = spectrogram(normalMe,h,wlen-hop,yxis,333e3);
-flag = [];
-    for o = 1:(length(normalMe)/hop) % ?hop????????????/hop
-        for r = 5:240 % ???1.5KHz-80KHz??????????
-            if p(r, o)/r>4e-6
-                flag(r, o)=1;
-            else
-                flag(r, o)=0;
-            end
-        end
-    end
 for o = 1:(length(normalMe)/hop) % ?hop????????????/hop
         PF = 0;
         for r = 5:240 % ???1.5KHz-80KHz??????????
-            PF = PF+flag(r, o);
+            PF = PF+p(r, o)/r;
         end
        res(o) = PF;
 end
 
-arcRess = [arcRess res*10e3];
+arcRess =res*10e7;
+arcFeatureHigh = abs(real(s(10,:)));
+arcFeatureLow = abs(real(s(2,:)));
 
-mls = arcRess';
+mls = [arcRess',arcFeatureLow',arcFeatureHigh'];
 end
