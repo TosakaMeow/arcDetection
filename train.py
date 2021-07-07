@@ -13,10 +13,10 @@ def train_main(path):
     # 打乱数据
     data = shuffle(data)
     # 提取数据集前九列作为输入
-    data_train = data[["f1", "f2", "f3", "f4",
-                       "f5", "f6", "f7", "f8", "f9",
-                       "f10", "f11", "f12", "f13", "f14",
-                       "f15", "f16", "f17", "f18", "f19"]]
+    data_train = data[["f1", "f2", "f3", "f4","f5", "f6",
+                       "f7", "f8", "f9", "f10",
+                       "f13", "f14","f15", "f16", "f23", "f24",
+                       "f25", "f26", "f27","f28", "f29", "f30"]]
 
     # 提取数据集第十列并reshape作为标签
     data_target = data["label"].values.reshape(len(data), 1)

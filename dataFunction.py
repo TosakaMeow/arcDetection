@@ -116,7 +116,7 @@ def file_solve(data, data_range):
     wb.save('result/data_temp.xls')
 
 
-def matlab_solve(data, data_range):
+def matlab_solve(data, data_range, filename):
     print("正在进行特征采样......")
     # 创建结果存储文件
     wb = xlwt.Workbook()
@@ -207,7 +207,61 @@ def matlab_solve(data, data_range):
         # print("已完成", int(100*i/int(xlsxData.nrows / 1000)), "%")
     # print("已完成 100 %")
 
-    wb.save(kwargs.matlab_slove.temp_path)
+    wb.save(filename)
+def trans_feature(data, i, f):
+    c0 = 0
+    c1 = 0
+    c2 = 0
+    c3 = 0
+    c4 = 0
+    c5 = 0
+    c6 = 0
+    c7 = 0
+    c8 = 0
+    c9 = 0
+    for k in range(i * kwargs.DNN.judge_window, (i + 1) * kwargs.DNN.judge_window):
+        val = data[f][k]
+        # print(val)
+        if val < 0.1:
+            c0 += 1
+        elif 0.1 <= val < 0.2:
+            c1 += 1
+        elif 0.2 <= val < 0.3:
+            c2 += 1
+        elif 0.3 <= val < 0.4:
+            c3 += 1
+        elif 0.4 <= val < 0.5:
+            c4 += 1
+        elif 0.5 <= val < 0.6:
+            c5 += 1
+        elif 0.6 <= val < 0.7:
+            c6 += 1
+        elif 0.7 <= val < 0.8:
+            c7 += 1
+        elif 0.8 <= val < 0.9:
+            c8 += 1
+        elif 0.9 <= val < 1.0:
+            c9 += 1
+        cell = [c0, c1, c2, c3, c4, c5, c6, c7, c8, c9]
+        return cell
+def presolve(data, data_range, filename=""):
+    print("正在进行特征采样......")
+    # 创建结果存储文件
+    wb = xlwt.Workbook()
+    sh = wb.add_sheet('1')
+    for i in range(0, int(data_range / kwargs.DNN.judge_window)):
+        cell = []
+        cell0 = trans_feature(data, i, "area")
+        cell += cell0
+        cell1 = trans_feature(data, i, "low")
+        cell += cell1
+        cell2 = trans_feature(data, i, "high")
+        cell += cell2
+        print(cell)
+
+
+
+    # wb.save(filename)
 
 
 def file_name(file_dir, file_type):
