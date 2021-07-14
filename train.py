@@ -1,45 +1,86 @@
 import pandas as pd
 import numpy as np
 import keras
-from keras import layers
+from keras.models import Sequential
+import keras.layers
 import matplotlib.pyplot as plt
 import kwargs
+from keras.models import Model
 from sklearn.utils import shuffle
+
+
 
 
 def train_main(path):
     # 读取训练集
-    data = pd.read_csv(path)
+    train_data = pd.read_csv("./data_train_ver3.0.csv")
+
     # 打乱数据
-    data = shuffle(data)
-    # 提取数据集前九列作为输入
-    data_train = data[["f1", "f2", "f3", "f4","f5", "f6",
-                       "f7", "f8", "f9", "f10",
-                       "f13", "f14","f15", "f16", "f23", "f24",
-                       "f25", "f26", "f27","f28", "f29", "f30"]]
+    data = shuffle(train_data)
 
-    # 提取数据集第十列并reshape作为标签
-    data_target = data["label"].values.reshape(len(data), 1)
-    print(np.shape(data_train), np.shape(data_target))
+    data = data[int(len(data) *0.2):]
+    conv_x = data[["area"]].values.reshape(len(data), 1, 1)
+    conv_y = data["label"].values.reshape(len(data), 1, 1)
+    base_x = data[["low", "high", "f2", "f3", "f4",
+                    "f5", "f6", "f7", "f8", "f9", "f10",
+                    "f12", "f13", "f14", "f15", "f16",
+                    "f17", "f18", "f19", "f20"]].values.reshape(len(data), 1, 20)
+    base_y = data["label"].values.reshape(len(data), 1)
 
-    # 构建模型
-    model = keras.Sequential()
-    # model.add(layers.Dense(32, input_dim=10, activation="softmax"))
-    model.add(layers.Dense(16, activation='relu', input_shape=(19,)))
-    model.add(layers.Dense(16, activation='relu'))
-    model.add(layers.Dense(1, activation='sigmoid'))
+    # 打乱数据
+    evaluate_data = data[:int(len(data) *0.2)]
+    evaluate_conv_x = evaluate_data[["area"]].values.reshape(len(evaluate_data), 1, 1)
+    evaluate_conv_y = evaluate_data["label"].values.reshape(len(evaluate_data), 1, 1)
+    evaluate_base_x = evaluate_data[["low", "high", "f2", "f3", "f4",
+                                     "f5", "f6", "f7", "f8", "f9", "f10",
+                                     "f12", "f13", "f14", "f15", "f16",
+                                     "f17", "f18", "f19", "f20"]].values.reshape(len(evaluate_data), 1, 20)
+    evaluate_base_y = evaluate_data["label"].values.reshape(len(evaluate_data), 1)
 
-    # 编译模型
+    # 对时域进行拟合
+    conv_model = keras.Sequential()
+    conv_model.add(
+        layer=keras.layers.Conv1D(filters=4, kernel_size=1000, strides=100, padding='same', input_shape=(None, 1)))
+    # conv_model.add(layer=keras.layers.MaxPooling2D(pool_size=10))
+    conv_model.add(layer=keras.layers.Dense(32, activation='relu'))
+    conv_model.add(layer=keras.layers.Dropout(0.5))
+    conv_model.add(layer=keras.layers.Dense(32, activation='relu'))
+    conv_model.add(layer=keras.layers.Dropout(0.5))
+    conv_model.add(layer=keras.layers.Dense(16))
+    conv_input = conv_model.input
+    conv_output = conv_model.output
+    # 对低频和高频进行拟合
+    base_model = keras.Sequential()
+    base_model.add(layer=keras.layers.Dense(32, activation='relu', input_shape=(None, 20)))
+    base_model.add(layer=keras.layers.Dropout(0.5))
+    base_model.add(layer=keras.layers.Dense(32, activation='relu'))
+    base_model.add(layer=keras.layers.Dropout(0.5))
+    base_model.add(layer=keras.layers.Dense(16))
+    base_input = base_model.input
+    base_output = base_model.output
+    # 模型融合
+    concatenated = keras.layers.concatenate([base_output, conv_output])
+    model = keras.layers.Dense(32, activation="relu")(concatenated)
+    model = keras.layers.Dense(32, activation="relu")(model)
+    model_output = keras.layers.Dense(1, activation="sigmoid")(model)
+    model = Model(inputs=[base_input, conv_input], outputs = model_output)
+
     model.compile(optimizer="adam",
-                  loss="binary_crossentropy",
-                  metrics=["acc"]
-                  )
+                       loss="binary_crossentropy",
+                       metrics=["acc"]
+                       )
 
     # 训练模型
-    history = model.fit(data_train, data_target, epochs=kwargs.DNN.epochs, batch_size=64)
+    history = model.fit([base_x, conv_x], conv_y, epochs=kwargs.DNN.epochs, batch_size=8)
+    print("正在进行验证......")
+    loss, accuracy = model.evaluate([evaluate_base_x, evaluate_conv_x], evaluate_conv_y, batch_size=8)
+    print("验证集的准确率为：",accuracy)
+
+
+
 
     # 保存模型
-    model.save("model.h5")
+    model.save(kwargs.DNN.test_model)
 
     # 绘制训练精度图
     plt.plot(range(kwargs.DNN.epochs), history.history.get('acc'))
@@ -47,4 +88,5 @@ def train_main(path):
     plt.ylabel("accuracy")
     plt.show()
 
-train_main("data_train.csv")
+
+train_main("D:/DataSource/")

@@ -1,7 +1,7 @@
 class DNN:
-    epochs = 20  # 训练轮次
+    epochs = 5  # 训练轮次
     predictPath = "D:/DataSource/train_data/arc"  # 预测场景选取
-    judge_window = 500
+    judge_window = 100
     test_model = "model.test.h5"
 
 
