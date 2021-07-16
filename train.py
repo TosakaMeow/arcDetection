@@ -38,8 +38,8 @@ def train_main(path):
     conv_model = keras.Sequential()
     conv_model.add(layer=keras.layers.Dense(32, activation='relu', input_shape=(None, 3)))
     conv_model.add(
-        layer=keras.layers.Conv1D(filters=4, kernel_size=1000, strides=100, padding='same'))
-    conv_model.add(layer=keras.layers.MaxPooling1D(pool_size=1, strides=2))
+        layer=keras.layers.Conv1D(filters=6, kernel_size=100, strides=10, padding='same'))
+    conv_model.add(layer=keras.layers.MaxPooling1D(pool_size=6, strides=2, data_format='channels_first'))
     conv_model.add(layer=keras.layers.Dropout(0.5))
     conv_model.add(layer=keras.layers.Dense(32, activation='relu'))
     conv_model.add(layer=keras.layers.Dropout(0.5))
