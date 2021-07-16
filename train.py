@@ -4,11 +4,10 @@
  * Date:2021.07.16
  '''
 
-import keras
-import keras.layers
+from tensorflow import keras
 import matplotlib.pyplot as plt
 import pandas as pd
-from keras.models import Model
+from tensorflow.keras.models import Model
 from sklearn.utils import shuffle
 import kwargs
 
