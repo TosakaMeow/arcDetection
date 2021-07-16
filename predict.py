@@ -9,6 +9,10 @@ import kwargs
 wb = xlwt.Workbook()
 sh = wb.add_sheet('1')
 
+print("正在初始化matlab组件......")
+eng = matlab.engine.start_matlab()
+
+print("matlab组件初始化完毕!")
 model = load_model(kwargs.DNN.test_model)
 print("模型加载完毕！")
 
