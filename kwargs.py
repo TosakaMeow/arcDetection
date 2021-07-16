@@ -2,11 +2,11 @@ class DNN:
     epochs = 10  # 训练轮次
     predictPath = "D:/DataSource/train_data/arc"  # 预测场景选取
     judge_window = 100
-    test_model = "model.h5"
+    test_model = "model.test.h5"
 
 
 class pretreat:
-    judge_val = 0.80  # 判断阈值
+    judge_val = 0.50  # 判断阈值
     predict_val_path = "./temp/预测值统计.temp.xls"
 
 
