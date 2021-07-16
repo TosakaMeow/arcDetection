@@ -1,9 +1,12 @@
-import matplotlib.pyplot as plt
+'''
+ * Copyright@violetnris@outlook.com
+ * Author:王昊
+ * Date:2021.07.16
+ '''
 import pandas as pd
 from sklearn.utils import shuffle
 import xlwt
 from keras.models import load_model
-import matlab.engine
 import kwargs
 
 wb = xlwt.Workbook()

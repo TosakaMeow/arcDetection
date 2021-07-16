@@ -1,10 +1,15 @@
+'''
+ * Copyright@violetnris@outlook.com
+ * Author:王昊
+ * Date:2021.07.16
+ '''
+
 import keras
 import keras.layers
 import matplotlib.pyplot as plt
 import pandas as pd
 from keras.models import Model
 from sklearn.utils import shuffle
-
 import kwargs
 
 
@@ -34,7 +39,7 @@ def train_main(path):
                                      "f16","f17", "f18", "f19", "f20"]].values.reshape(len(evaluate_data), 1, 20)
     evaluate_base_y = evaluate_data["label"].values.reshape(len(evaluate_data), 1)
 
-    # 对时域进行拟合
+    # 对连续数据进行拟合
     conv_model = keras.Sequential()
     conv_model.add(layer=keras.layers.Dense(32, activation='relu', input_shape=(None, 3)))
     conv_model.add(
@@ -46,7 +51,7 @@ def train_main(path):
     conv_model.add(layer=keras.layers.Dense(16))
     conv_input = conv_model.input
     conv_output = conv_model.output
-    # 对低频和高频进行拟合
+    # 对离散数据进行拟合
     base_model = keras.Sequential()
     base_model.add(layer=keras.layers.Dense(32, activation='relu', input_shape=(None, 20)))
     base_model.add(layer=keras.layers.Dropout(0.5))
@@ -61,7 +66,7 @@ def train_main(path):
     model = keras.layers.Dense(32, activation="relu")(model)
     model_output = keras.layers.Dense(1, activation="sigmoid")(model)
     model = Model(inputs=[base_input, conv_input], outputs = model_output)
-
+    # 编译模型
     model.compile(optimizer="adam",
                        loss="binary_crossentropy",
                        metrics=["acc"]

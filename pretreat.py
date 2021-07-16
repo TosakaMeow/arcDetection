@@ -1,3 +1,8 @@
+'''
+ * Copyright@violetnris@outlook.com
+ * Author:王昊
+ * Date:2021.07.16
+ '''
 import xlwt
 import pandas as pd
 import kwargs
@@ -117,7 +122,7 @@ def pretreat_main(source_data, temp_data):
 
 
 
-pretreat_main("./featureData/normal_data.csv", "./temp/normal_temp.xls")
-pretreat_main("./featureData/arc_data.csv", "./temp/arc_temp.xls")
-pretreat_main("./featureData/normal_test_data.csv", "./temp/normal_test_temp.xls")
-pretreat_main("./featureData/arc_test_data.csv", "./temp/arc_test_temp.xls")
+pretreat_main("./source_data/normal_data.csv", "./temp/normal_temp.xls")
+pretreat_main("./source_data/arc_data.csv", "./temp/arc_temp.xls")
+pretreat_main("./source_data/normal_test_data.csv", "./temp/normal_test_temp.xls")
+pretreat_main("./source_data/arc_test_data.csv", "./temp/arc_test_temp.xls")
