@@ -1,6 +1,5 @@
 '''
  * Copyright@violetnris@outlook.com
- * Author:王昊
  * Date:2021.07.16
  '''
 
